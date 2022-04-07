@@ -18,12 +18,15 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] LayerMask capaSuelo; 
     RaycastHit2D raycastSuelo; 
     Queue<KeyCode> inputBuffer;
-    
+    Animator animator;
+
     // Start is called before the first frame update
     void Start()
     {
         rb = gameObject.GetComponent<Rigidbody2D>(); 
         inputBuffer = new Queue<KeyCode>();
+        animator = GetComponent<Animator>();
+
     }
 
     // Update is called once per frame
@@ -36,7 +39,18 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = new Vector2(Input.GetAxisRaw("Horizontal") * force, rb.velocity.y);
         raycastSuelo = Physics2D.Raycast(transform.position, Vector2.down, 2.0f, capaSuelo); 
         Debug.DrawRay(transform.position, Vector2.down, Color.green);
-
+        if(Mathf.Abs(rb.velocity.x) > 0.2){
+            animator.SetBool("Walking", true); 
+        }
+        else{
+            animator.SetBool("Walking", false); 
+        }
+        if(rb.velocity.x < 0){
+            gameObject.transform.rotation = Quaternion.Euler(0, 180, 0); 
+        }
+        if(rb.velocity.x > 0){
+            gameObject.transform.rotation = Quaternion.Euler(0, 0, 0); 
+        }
         if (Input.GetKeyDown("w") || Input.GetKeyDown(KeyCode.JoystickButton0)){
             Debug.Log("Entro"); 
             inputBuffer.Enqueue(KeyCode.W); 
